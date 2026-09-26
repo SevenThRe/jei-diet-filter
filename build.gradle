@@ -1,0 +1,61 @@
+plugins {
+    id 'java'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+}
+
+group = 'com.jeidietfilter'
+version = '1.0.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+minecraft {
+    mappings channel: 'official', version: '1.20.1'
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            mods {
+                jei_diet_filter {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://maven.minecraftforge.net' }
+    maven { url = 'https://maven.blamejared.com' }
+    // Local Diet jar (no public maven). flatDir gives the file a module identity so that
+    // fg.deobf can remap it (fg.deobf refuses plain files(...) deps) and so that it shows
+    // up in dependency reports.
+    flatDir { dirs 'libs' }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:1.20.1-47.4.13"
+
+    // JEI: need the full jar at compile time (we mixin into JEI internals, the api jar is not enough)
+    compileOnly fg.deobf("mezz.jei:jei-1.20.1-forge:15.20.0.129")
+    runtimeOnly fg.deobf("mezz.jei:jei-1.20.1-forge:15.20.0.129")
+
+    // solcarrot: data source for "eaten" state (its tooltip marks foods as 已食用).
+    // No public maven, resolved from libs/ via the flatDir repo above.
+    // Plain files(...) was rejected by fg.deobf ("Cannot deobfuscate dependency of type
+    // DefaultFileCollectionDependency_Decorated"), and file deps do not appear in
+    // 'gradle dependencies' output -- flatDir + module coordinates solves both.
+    compileOnly fg.deobf("solcarrot:solcarrot:1.20.1-1.15.1")
+    runtimeOnly fg.deobf("solcarrot:solcarrot:1.20.1-1.15.1")
+}
+
+jar {
+    manifest {
+        attributes('MixinConfigs': 'jei_diet_filter.mixins.json')
+    }
+}
