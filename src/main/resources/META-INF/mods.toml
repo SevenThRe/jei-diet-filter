@@ -7,7 +7,7 @@ modId="jei_diet_filter"
 version="1.0.0"
 displayName="JEI Diet Filter"
 displayTest="IGNORE_ALL_VERSION"
-description='''Adds a "!" prefix to the JEI search box to show only foods not yet eaten according to Diet.'''
+description='''Adds a "!" prefix to the JEI search box to show only foods not yet eaten according to solcarrot.'''
 
 [[dependencies.jei_diet_filter]]
 modId="forge"
